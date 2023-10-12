@@ -43,6 +43,7 @@ import states.editors.CharacterEditorState;
 
 import substates.PauseSubState;
 import substates.GameOverSubstate;
+import substates.ResultScreenSubState;
 
 #if !flash 
 import flixel.addons.display.FlxRuntimeShader;
@@ -2242,7 +2243,11 @@ class PlayState extends MusicBeatState
 				return false;
 			}
 		}
+		
+		if (!chartingMode) openSubState(new ResultScreenSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, songScore, songMisses, ratingsData));
 
+		while (!controls.ACCEPT) trace('Are we there yet?');
+		
 		timeBar.visible = false;
 		timeTxt.visible = false;
 		canPause = false;
@@ -2290,6 +2295,7 @@ class PlayState extends MusicBeatState
 				campaignMisses += songMisses;
 
 				storyPlaylist.remove(storyPlaylist[0]);
+				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 				if (storyPlaylist.length <= 0)
 				{
