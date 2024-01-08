@@ -879,7 +879,8 @@ class PlayState extends MusicBeatState
 	function startAndEnd()
 	{
 		if(endingSong)
-			endSong();
+			//endSong();
+			openRatingsMenu();
 		else
 			startCountdown();
 	}
@@ -901,7 +902,8 @@ class PlayState extends MusicBeatState
 			if(endingSong) {
 				psychDialogue.finishThing = function() {
 					psychDialogue = null;
-					endSong();
+					openRatingsMenu();
+					//endSong();
 				}
 			} else {
 				psychDialogue.finishThing = function() {
@@ -1792,6 +1794,22 @@ class PlayState extends MusicBeatState
 		callOnScripts('onUpdatePost', [elapsed]);
 	}
 
+	function openRatingsMenu(){
+		FlxG.camera.followLerp = 0;
+		persistentUpdate = false;
+		persistentDraw = true;
+		//paused = true;
+
+		if(FlxG.sound.music != null) {
+			FlxG.sound.music.pause();
+			vocals.pause();
+		}
+
+		openSubState(new ResultScreenSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, songScore, songMisses));
+	}
+
+
+
 	function openPauseMenu()
 	{
 		FlxG.camera.followLerp = 0;
@@ -2214,10 +2232,12 @@ class PlayState extends MusicBeatState
 		vocals.volume = 0;
 		vocals.pause();
 		if(ClientPrefs.data.noteOffset <= 0 || ignoreNoteOffset) {
-			endCallback();
+			openRatingsMenu();
+			//endCallback();
 		} else {
 			finishTimer = new FlxTimer().start(ClientPrefs.data.noteOffset / 1000, function(tmr:FlxTimer) {
-				endCallback();
+				openRatingsMenu();
+				//endCallback();
 			});
 		}
 	}
@@ -2227,6 +2247,7 @@ class PlayState extends MusicBeatState
 	public function endSong()
 	{
 		//Should kill you if you tried to cheat
+
 		if(!startingSong) {
 			notes.forEach(function(daNote:Note) {
 				if(daNote.strumTime < songLength - Conductor.safeZoneOffset) {
@@ -2244,9 +2265,6 @@ class PlayState extends MusicBeatState
 			}
 		}
 		
-		if (!chartingMode) openSubState(new ResultScreenSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, songScore, songMisses, ratingsData));
-
-		while (!controls.ACCEPT) trace('Are we there yet?');
 		
 		timeBar.visible = false;
 		timeTxt.visible = false;
@@ -2368,7 +2386,8 @@ class PlayState extends MusicBeatState
 	{
 		achievementObj = null;
 		if(endingSong && !inCutscene) {
-			endSong();
+			//endSong();
+			openRatingsMenu();
 		}
 	}
 	#end
